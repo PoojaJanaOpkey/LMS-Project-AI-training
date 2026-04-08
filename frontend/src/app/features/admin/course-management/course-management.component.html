@@ -1,0 +1,85 @@
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="display-6 fw-bold">Course Management</h1>
+      <p class="text-muted">Create, update, and manage your courses</p>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-primary" (click)="openAddModal()">
+        <i class="bi bi-plus-circle me-2"></i>Add New Course
+      </button>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" placeholder="Search courses..." [(ngModel)]="searchQuery" (ngModelChange)="searchCourses()">
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+  }
+
+  @if (!loading && filteredCourses.length > 0) {
+    <div class="card border-0 shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th>Course</th>
+              <th>Category</th>
+              <th>Level</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (course of filteredCourses; track course.id) {
+              <tr>
+                <td><strong>{{ course.title }}</strong></td>
+                <td><span class="badge bg-primary">{{ course.category }}</span></td>
+                <td><span class="badge bg-secondary">{{ course.level }}</span></td>
+                <td>${{ course.price }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-2" (click)="openEditModal(course)"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteCourse(course)"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
+
+@if (showModal) {
+  <div class="modal show d-block" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5>{{ isEditing ? 'Edit' : 'Add' }} Course</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" [(ngModel)]="editingCourse.title" name="title">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" [(ngModel)]="editingCourse.description" name="description"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="saveCourse()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

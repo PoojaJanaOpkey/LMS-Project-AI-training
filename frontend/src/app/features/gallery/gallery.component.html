@@ -1,0 +1,132 @@
+<div class="container py-5">
+  <!-- Page Header -->
+  <div class="row mb-5">
+    <div class="col text-center">
+      <h1 class="display-4 fw-bold">Gallery</h1>
+      <p class="lead text-muted">Explore our course materials, student projects, and learning moments</p>
+    </div>
+  </div>
+
+  <!-- Filter Buttons -->
+  <div class="row mb-4">
+    <div class="col text-center">
+      <div class="btn-group" role="group">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="selectedFilter === 'all'"
+          [class.btn-outline-primary]="selectedFilter !== 'all'"
+          (click)="filterItems('all')">
+          <i class="bi bi-grid-3x3-gap me-1"></i>All
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="selectedFilter === 'image'"
+          [class.btn-outline-primary]="selectedFilter !== 'image'"
+          (click)="filterItems('image')">
+          <i class="bi bi-image me-1"></i>Images
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="selectedFilter === 'video'"
+          [class.btn-outline-primary]="selectedFilter !== 'video'"
+          (click)="filterItems('video')">
+          <i class="bi bi-play-circle me-1"></i>Videos
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="selectedFilter === 'document'"
+          [class.btn-outline-primary]="selectedFilter !== 'document'"
+          (click)="filterItems('document')">
+          <i class="bi bi-file-earmark-text me-1"></i>Documents
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  <!-- Gallery Grid -->
+  @if (!loading && filteredItems.length > 0) {
+    <div class="row g-4">
+      @for (item of filteredItems; track item.id) {
+        <div class="col-lg-4 col-md-6">
+          <div class="card gallery-item border-0 shadow-sm h-100">
+            @if (item.type === 'image') {
+              <img [src]="item.thumbnailUrl" class="card-img-top" [alt]="item.title" style="height: 250px; object-fit: cover; cursor: pointer;" data-bs-toggle="modal" [attr.data-bs-target]="'#modal' + item.id">
+            } @else if (item.type === 'video') {
+              <div class="position-relative" style="height: 250px; background: #000;">
+                <img [src]="item.thumbnailUrl" class="img-fluid w-100 h-100" style="object-fit: cover; opacity: 0.7;">
+                <div class="position-absolute top-50 start-50 translate-middle">
+                  <i class="bi bi-play-circle-fill text-white" style="font-size: 4rem; cursor: pointer;" data-bs-toggle="modal" [attr.data-bs-target]="'#modal' + item.id"></i>
+                </div>
+              </div>
+            } @else {
+              <div class="d-flex align-items-center justify-content-center bg-light" style="height: 250px;">
+                <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 5rem;"></i>
+              </div>
+            }
+            
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge" [class.bg-primary]="item.type === 'image'" [class.bg-success]="item.type === 'video'" [class.bg-info]="item.type === 'document'">
+                  {{ item.type | titlecase }}
+                </span>
+                <small class="text-muted">{{ item.uploadedAt | date:'shortDate' }}</small>
+              </div>
+              <h5 class="card-title fw-bold">{{ item.title }}</h5>
+              <p class="card-text text-muted small">{{ item.description }}</p>
+            </div>
+          </div>
+
+          <!-- Modal for full view -->
+          <div class="modal fade" [id]="'modal' + item.id" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">{{ item.title }}</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  @if (item.type === 'image') {
+                    <img [src]="item.url" class="img-fluid w-100" [alt]="item.title">
+                  } @else if (item.type === 'video') {
+                    <div class="ratio ratio-16x9">
+                      <iframe [src]="item.url" allowfullscreen></iframe>
+                    </div>
+                  } @else {
+                    <div class="text-center py-5">
+                      <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 5rem;"></i>
+                      <h4 class="mt-3">{{ item.title }}</h4>
+                      <p class="text-muted">{{ item.description }}</p>
+                      <a [href]="item.url" class="btn btn-primary" download>
+                        <i class="bi bi-download me-2"></i>Download Document
+                      </a>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading && filteredItems.length === 0) {
+    <div class="text-center py-5">
+      <i class="bi bi-images display-1 text-muted"></i>
+      <h3 class="mt-3">No items found</h3>
+      <p class="text-muted">Try selecting a different filter</p>
+    </div>
+  }
+</div>

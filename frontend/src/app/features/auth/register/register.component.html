@@ -1,0 +1,185 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <i class="bi bi-person-plus-fill display-1 text-primary"></i>
+            <h2 class="fw-bold mt-3">Create Account</h2>
+            <p class="text-muted">Join us and start learning today</p>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label fw-semibold">
+                  <i class="bi bi-person me-2"></i>First Name
+                </label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="firstName"
+                  formControlName="firstName"
+                  placeholder="John"
+                  [class.is-invalid]="firstName?.invalid && firstName?.touched">
+                @if (firstName?.invalid && firstName?.touched) {
+                  <div class="invalid-feedback">
+                    @if (firstName?.errors?.['required']) {
+                      First name is required
+                    } @else if (firstName?.errors?.['minlength']) {
+                      Minimum 2 characters required
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label fw-semibold">
+                  <i class="bi bi-person me-2"></i>Last Name
+                </label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="lastName"
+                  formControlName="lastName"
+                  placeholder="Doe"
+                  [class.is-invalid]="lastName?.invalid && lastName?.touched">
+                @if (lastName?.invalid && lastName?.touched) {
+                  <div class="invalid-feedback">
+                    @if (lastName?.errors?.['required']) {
+                      Last name is required
+                    } @else if (lastName?.errors?.['minlength']) {
+                      Minimum 2 characters required
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">
+                <i class="bi bi-envelope me-2"></i>Email Address
+              </label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                formControlName="email"
+                placeholder="john.doe@example.com"
+                [class.is-invalid]="email?.invalid && email?.touched">
+              @if (email?.invalid && email?.touched) {
+                <div class="invalid-feedback">
+                  @if (email?.errors?.['required']) {
+                    Email is required
+                  } @else if (email?.errors?.['email']) {
+                    Please enter a valid email address
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label fw-semibold">
+                <i class="bi bi-lock me-2"></i>Password
+              </label>
+              <div class="input-group">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control"
+                  id="password"
+                  formControlName="password"
+                  placeholder="Enter a strong password"
+                  [class.is-invalid]="password?.invalid && password?.touched">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="togglePassword()">
+                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+              @if (password?.invalid && password?.touched) {
+                <div class="invalid-feedback d-block">
+                  @if (password?.errors?.['required']) {
+                    Password is required
+                  } @else if (password?.errors?.['minlength']) {
+                    Password must be at least 6 characters
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label fw-semibold">
+                <i class="bi bi-lock-fill me-2"></i>Confirm Password
+              </label>
+              <div class="input-group">
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  class="form-control"
+                  id="confirmPassword"
+                  formControlName="confirmPassword"
+                  placeholder="Re-enter your password"
+                  [class.is-invalid]="(confirmPassword?.invalid && confirmPassword?.touched) || (registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched)">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="toggleConfirmPassword()">
+                  <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+              @if (confirmPassword?.touched) {
+                <div class="invalid-feedback d-block">
+                  @if (confirmPassword?.errors?.['required']) {
+                    Please confirm your password
+                  } @else if (registerForm.errors?.['passwordMismatch']) {
+                    Passwords do not match
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mb-4 form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="agreeTerms"
+                formControlName="agreeTerms"
+                [class.is-invalid]="agreeTerms?.invalid && agreeTerms?.touched">
+              <label class="form-check-label" for="agreeTerms">
+                I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> 
+                and <a href="#" class="text-decoration-none">Privacy Policy</a>
+              </label>
+              @if (agreeTerms?.invalid && agreeTerms?.touched) {
+                <div class="invalid-feedback d-block">
+                  You must agree to the terms and conditions
+                </div>
+              }
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg w-100 mb-3"
+              [disabled]="loading">
+              @if (loading) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Creating Account...
+              } @else {
+                <i class="bi bi-person-check me-2"></i>
+                Create Account
+              }
+            </button>
+          </form>
+
+          <hr class="my-4">
+
+          <div class="text-center">
+            <p class="mb-0">
+              Already have an account?
+              <a routerLink="/auth/login" class="fw-semibold text-decoration-none">Sign In</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

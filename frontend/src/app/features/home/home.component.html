@@ -1,0 +1,163 @@
+<!-- Hero Section with Carousel -->
+<section id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    @for (slide of carouselSlides; track $index) {
+      <button 
+        type="button" 
+        [attr.data-bs-target]="'#hero-carousel'" 
+        [attr.data-bs-slide-to]="$index"
+        [class.active]="$index === 0"
+        [attr.aria-current]="$index === 0 ? 'true' : null"
+        [attr.aria-label]="'Slide ' + ($index + 1)">
+      </button>
+    }
+  </div>
+  
+  <div class="carousel-inner">
+    @for (slide of carouselSlides; track $index) {
+      <div class="carousel-item" [class.active]="$index === 0">
+        <div class="hero-slide" [style.background-image]="'url(' + slide.url + ')'">
+          <div class="hero-overlay"></div>
+          <div class="container">
+            <div class="hero-content text-white">
+              <h1 class="display-3 fw-bold mb-4 fade-in">{{ slide.title }}</h1>
+              <p class="lead mb-4 fade-in">{{ slide.description }}</p>
+              <div class="fade-in">
+                <a routerLink="/courses" class="btn btn-primary btn-lg me-3">Browse Courses</a>
+                <a routerLink="/auth/register" class="btn btn-outline-light btn-lg">Get Started</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+  
+  <button class="carousel-control-prev" type="button" data-bs-target="#hero-carousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#hero-carousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row g-4">
+      @for (stat of stats; track $index) {
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card text-center" [class]="stat.color">
+            <i class="bi {{ stat.icon }} display-4 mb-3 text-{{ stat.color }}"></i>
+            <h2 class="fw-bold mb-2">{{ stat.value }}</h2>
+            <p class="text-muted mb-0">{{ stat.label }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Why Choose Our Platform?</h2>
+      <p class="lead text-muted">Discover the benefits of learning with us</p>
+    </div>
+    
+    <div class="row g-4">
+      @for (feature of features; track $index) {
+        <div class="col-md-4">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+              <div class="feature-icon bg-primary-custom bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <i class="bi {{ feature.icon }} fs-1"></i>
+              </div>
+              <h5 class="card-title fw-bold mb-3">{{ feature.title }}</h5>
+              <p class="card-text text-muted">{{ feature.description }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Popular Courses Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Popular Courses</h2>
+      <p class="lead text-muted">Explore our most sought-after courses</p>
+    </div>
+    
+    @if (loading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    } @else {
+      <div class="row g-4">
+        @for (course of popularCourses; track course.id) {
+          <div class="col-lg-4 col-md-6">
+            <div class="card course-card h-100 border-0 shadow-sm">
+              <img [src]="course.imageUrl" class="card-img-top" [alt]="course.title" style="height: 200px; object-fit: cover;">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge bg-primary">{{ course.category }}</span>
+                  <span class="badge bg-secondary">{{ course.level }}</span>
+                </div>
+                <h5 class="card-title fw-bold">{{ course.title }}</h5>
+                <p class="card-text text-muted small">{{ course.description }}</p>
+                
+                <div class="d-flex align-items-center mb-2">
+                  <div class="text-warning me-2">
+                    @for (star of [1,2,3,4,5]; track $index) {
+                      <i class="bi bi-star-fill" [class.text-muted]="star > (course.rating || 0)"></i>
+                    }
+                  </div>
+                  <span class="small text-muted">({{ course.totalRatings }} reviews)</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-muted small">
+                    <i class="bi bi-people me-1"></i>{{ course.totalEnrollments }} students
+                  </span>
+                  <span class="text-muted small">
+                    <i class="bi bi-clock me-1"></i>{{ course.duration }}h
+                  </span>
+                </div>
+                
+                <p class="text-muted small mb-2">
+                  <i class="bi bi-person me-1"></i>{{ course.instructorName }}
+                </p>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                  <h4 class="fw-bold text-primary mb-0">${{ course.price }}</h4>
+                  <a [routerLink]="['/courses', course.id]" class="btn btn-primary">View Details</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+      
+      <div class="text-center mt-5">
+        <a routerLink="/courses" class="btn btn-primary btn-lg">View All Courses</a>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-gradient-custom text-white">
+  <div class="container text-center">
+    <h2 class="display-5 fw-bold mb-4">Ready to Start Learning?</h2>
+    <p class="lead mb-4">Join thousands of students and transform your career today</p>
+    <a routerLink="/auth/register" class="btn btn-light btn-lg px-5">Sign Up Now</a>
+  </div>
+</section>

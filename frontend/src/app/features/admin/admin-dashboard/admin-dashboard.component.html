@@ -1,0 +1,227 @@
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="display-5 fw-bold">Admin Dashboard</h1>
+      <p class="lead text-muted">Manage your LMS platform and monitor performance</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  @if (!loading) {
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-xl-3 col-md-6">
+        <div class="card stat-card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-1 small">Total Students</p>
+                <h2 class="fw-bold mb-0">{{ stats.totalStudents }}</h2>
+                <span class="badge bg-success mt-2">
+                  <i class="bi bi-arrow-up"></i> 12% this month
+                </span>
+              </div>
+              <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                <i class="bi bi-people-fill text-primary fs-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="card stat-card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-1 small">Total Courses</p>
+                <h2 class="fw-bold mb-0">{{ stats.totalCourses }}</h2>
+                <span class="badge bg-info mt-2">
+                  <i class="bi bi-arrow-up"></i> 3 new
+                </span>
+              </div>
+              <div class="rounded-circle bg-warning bg-opacity-10 p-3">
+                <i class="bi bi-book-fill text-warning fs-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="card stat-card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-1 small">Total Enrollments</p>
+                <h2 class="fw-bold mb-0">{{ stats.totalEnrollments }}</h2>
+                <span class="badge bg-success mt-2">
+                  <i class="bi bi-arrow-up"></i> 8% increase
+                </span>
+              </div>
+              <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                <i class="bi bi-graph-up-arrow text-success fs-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="card stat-card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-1 small">Total Revenue</p>
+                <h2 class="fw-bold mb-0">${{ stats.totalRevenue | number:'1.0-0' }}</h2>
+                <span class="badge bg-success mt-2">
+                  <i class="bi bi-arrow-up"></i> 15% growth
+                </span>
+              </div>
+              <div class="rounded-circle bg-danger bg-opacity-10 p-3">
+                <i class="bi bi-currency-dollar text-danger fs-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <!-- Top Courses -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 pt-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="fw-bold mb-0">Top Performing Courses</h5>
+              <a routerLink="/admin/courses" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Course Name</th>
+                    <th>Enrollments</th>
+                    <th>Revenue</th>
+                    <th>Rating</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (course of topCourses; track $index) {
+                    <tr>
+                      <td class="fw-semibold">{{ course.name }}</td>
+                      <td>
+                        <span class="badge bg-primary">{{ course.enrollments }}</span>
+                      </td>
+                      <td>${{ course.revenue | number:'1.0-0' }}</td>
+                      <td>
+                        <div class="text-warning">
+                          @for (star of [1,2,3,4,5]; track $index) {
+                            <i class="bi bi-star-fill small" [class.text-muted]="star > course.rating"></i>
+                          }
+                          <span class="text-dark ms-1 small">{{ course.rating }}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Overview -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 pt-4">
+            <h5 class="fw-bold mb-0">Activity Overview</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small text-muted">Active Students</span>
+                <span class="fw-bold">{{ stats.activeStudents }}/{{ stats.totalStudents }}</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-success" [style.width.%]="(stats.activeStudents / stats.totalStudents) * 100"></div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small text-muted">Completion Rate</span>
+                <span class="fw-bold">{{ stats.completionRate }}%</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-primary" [style.width.%]="stats.completionRate"></div>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <a routerLink="/admin/courses" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Add New Course
+              </a>
+              <a routerLink="/admin/students" class="btn btn-outline-primary">
+                <i class="bi bi-people me-2"></i>Manage Students
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Enrollments -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 pt-4">
+            <h5 class="fw-bold mb-0">Recent Enrollments</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Course</th>
+                    <th>Enrolled At</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (enrollment of recentEnrollments; track $index) {
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                            <span class="small">{{ enrollment.studentName.charAt(0) }}</span>
+                          </div>
+                          <span class="fw-semibold">{{ enrollment.studentName }}</span>
+                        </div>
+                      </td>
+                      <td>{{ enrollment.courseName }}</td>
+                      <td>{{ enrollment.enrolledAt | date:'short' }}</td>
+                      <td class="fw-bold text-success">${{ enrollment.amount }}</td>
+                      <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

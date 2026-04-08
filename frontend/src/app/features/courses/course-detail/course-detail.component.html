@@ -1,0 +1,226 @@
+@if (loading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+}
+
+@if (!loading && course) {
+  <!-- Course Header -->
+  <section class="bg-gradient-custom text-white py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a routerLink="/" class="text-white">Home</a></li>
+              <li class="breadcrumb-item"><a routerLink="/courses" class="text-white">Courses</a></li>
+              <li class="breadcrumb-item active text-white" aria-current="page">{{ course.title }}</li>
+            </ol>
+          </nav>
+          
+          <h1 class="display-4 fw-bold mb-3">{{ course.title }}</h1>
+          <p class="lead mb-4">{{ course.description }}</p>
+          
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <span class="badge bg-light text-dark">{{ course.category | titlecase }}</span>
+            <span class="badge bg-light text-dark">{{ course.level | titlecase }}</span>
+          </div>
+          
+          <div class="d-flex flex-wrap gap-4 mb-4">
+            <div>
+              <i class="bi bi-star-fill text-warning me-1"></i>
+              <strong>{{ course.rating }}</strong> ({{ course.totalRatings }} reviews)
+            </div>
+            <div>
+              <i class="bi bi-people me-1"></i>
+              {{ course.totalEnrollments }} students enrolled
+            </div>
+            <div>
+              <i class="bi bi-clock me-1"></i>
+              {{ course.duration }} hours
+            </div>
+          </div>
+          
+          <div>
+            <i class="bi bi-person-circle me-2"></i>
+            Instructor: <strong>{{ course.instructorName }}</strong>
+          </div>
+        </div>
+        
+        <div class="col-lg-4">
+          <div class="card bg-white text-dark shadow-lg">
+            <img [src]="course.imageUrl" class="card-img-top" [alt]="course.title" style="height: 250px; object-fit: cover;">
+            <div class="card-body">
+              <h2 class="fw-bold text-primary mb-3">${{ course.price }}</h2>
+              
+              @if (isEnrolled) {
+                <button class="btn btn-success btn-lg w-100 mb-3" disabled>
+                  <i class="bi bi-check-circle me-2"></i>Enrolled
+                </button>
+              } @else {
+                <button 
+                  class="btn btn-primary btn-lg w-100 mb-3" 
+                  (click)="enrollInCourse()"
+                  [disabled]="enrolling">
+                  @if (enrolling) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Enrolling...
+                  } @else {
+                    <i class="bi bi-cart-plus me-2"></i>
+                    @if (course.price === 0) {
+                      Enroll for Free
+                    } @else {
+                      Enroll Now
+                    }
+                  }
+                </button>
+              }
+              
+              <p class="text-center text-muted small mb-3">30-day money-back guarantee</p>
+              
+              <div class="mb-2">
+                <i class="bi bi-check-circle text-success me-2"></i>Full lifetime access
+              </div>
+              <div class="mb-2">
+                <i class="bi bi-check-circle text-success me-2"></i>Access on mobile and desktop
+              </div>
+              <div class="mb-2">
+                <i class="bi bi-check-circle text-success me-2"></i>Certificate of completion
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-lg-8">
+        <!-- Course Content -->
+        <section class="mb-5">
+          <h3 class="fw-bold mb-4">Course Content</h3>
+          
+          <div class="accordion" id="modulesAccordion">
+            @for (module of modules; track module.id) {
+              <div class="accordion-item border-0 shadow-sm mb-3">
+                <h2 class="accordion-header">
+                  <button 
+                    class="accordion-button"
+                    [class.collapsed]="$first === false"
+                    type="button" 
+                    data-bs-toggle="collapse" 
+                    [attr.data-bs-target]="'#module' + module.id">
+                    <div class="w-100">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <strong>Module {{ module.order }}: {{ module.title }}</strong>
+                        <span class="badge bg-primary ms-2">{{ module.lessons.length }} lessons</span>
+                      </div>
+                      <small class="text-muted d-block mt-1">{{ module.description }}</small>
+                    </div>
+                  </button>
+                </h2>
+                <div 
+                  [id]="'module' + module.id" 
+                  class="accordion-collapse collapse"
+                  [class.show]="$first"
+                  data-bs-parent="#modulesAccordion">
+                  <div class="accordion-body">
+                    <ul class="list-group list-group-flush">
+                      @for (lesson of module.lessons; track lesson.id) {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <div>
+                            <i class="bi bi-play-circle me-2"></i>
+                            {{ lesson.title }}
+                          </div>
+                          <span class="text-muted small">{{ lesson.duration }} min</span>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Student Reviews -->
+        <section class="mb-5">
+          <h3 class="fw-bold mb-4">Student Reviews</h3>
+          
+          @if (ratings.length > 0) {
+            <div class="mb-4">
+              @for (rating of ratings; track rating.id) {
+                <div class="card border-0 shadow-sm mb-3">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <h6 class="mb-1 fw-bold">{{ rating.userName }}</h6>
+                        <div class="text-warning">
+                          @for (star of [1,2,3,4,5]; track $index) {
+                            <i class="bi bi-star-fill" [class.text-muted]="star > rating.rating"></i>
+                          }
+                        </div>
+                      </div>
+                      <small class="text-muted">{{ rating.createdAt | date:'mediumDate' }}</small>
+                    </div>
+                    <p class="mb-0">{{ rating.review }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-2"></i>No reviews yet. Be the first to review this course!
+            </div>
+          }
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <!-- Instructor Info -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">Instructor</h5>
+            <div class="d-flex align-items-center mb-3">
+              <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                <i class="bi bi-person-fill fs-4"></i>
+              </div>
+              <div>
+                <h6 class="mb-0 fw-bold">{{ course.instructorName }}</h6>
+                <small class="text-muted">Professional Instructor</small>
+              </div>
+            </div>
+            <p class="small text-muted mb-0">
+              Experienced instructor with years of industry expertise in {{ course.category }}.
+            </p>
+          </div>
+        </div>
+
+        <!-- Share Course -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">Share this course</h5>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-primary flex-fill">
+                <i class="bi bi-facebook"></i>
+              </button>
+              <button class="btn btn-outline-info flex-fill">
+                <i class="bi bi-twitter"></i>
+              </button>
+              <button class="btn btn-outline-danger flex-fill">
+                <i class="bi bi-linkedin"></i>
+              </button>
+              <button class="btn btn-outline-secondary flex-fill">
+                <i class="bi bi-link-45deg"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

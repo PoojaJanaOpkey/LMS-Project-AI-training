@@ -1,0 +1,29 @@
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11000;">
+  @for (notification of notifications; track notification.id) {
+    <div class="toast show" role="alert" [ngClass]="getToastClass(notification.type)">
+      <div class="toast-header text-white" [ngClass]="getToastClass(notification.type)">
+        <strong class="me-auto">
+          @if (notification.type === 'success') {
+            <i class="bi bi-check-circle me-2"></i>
+          } @else if (notification.type === 'error') {
+            <i class="bi bi-x-circle me-2"></i>
+          } @else if (notification.type === 'warning') {
+            <i class="bi bi-exclamation-triangle me-2"></i>
+          } @else {
+            <i class="bi bi-info-circle me-2"></i>
+          }
+          {{ notification.title }}
+        </strong>
+        <button 
+          type="button" 
+          class="btn-close btn-close-white" 
+          (click)="removeNotification(notification)"
+          aria-label="Close">
+        </button>
+      </div>
+      <div class="toast-body text-white">
+        {{ notification.message }}
+      </div>
+    </div>
+  }
+</div>

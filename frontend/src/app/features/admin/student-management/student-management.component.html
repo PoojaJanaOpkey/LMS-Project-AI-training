@@ -1,0 +1,73 @@
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="display-6 fw-bold">Student Management</h1>
+      <p class="text-muted">Monitor student progress</p>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" placeholder="Search students..." [(ngModel)]="searchQuery" (ngModelChange)="searchStudents()">
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+  }
+
+  @if (!loading && filteredStudents.length > 0) {
+    <div class="card border-0 shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th>Student</th>
+              <th>Email</th>
+              <th>Courses</th>
+              <th>Progress</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (student of filteredStudents; track student.id) {
+              <tr>
+                <td>{{ student.firstName }} {{ student.lastName }}</td>
+                <td>{{ student.email }}</td>
+                <td><span class="badge bg-primary">{{ student.enrolledCourses }}</span></td>
+                <td>{{ student.totalProgress }}%</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" (click)="viewStudent(student)"><i class="bi bi-eye"></i></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
+
+@if (selectedStudent) {
+  <div class="modal show d-block" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5>Student Details</h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <h6>{{ selectedStudent.firstName }} {{ selectedStudent.lastName }}</h6>
+          <p>{{ selectedStudent.email }}</p>
+          <p>Enrolled: {{ selectedStudent.enrolledCourses }} | Completed: {{ selectedStudent.completedCourses }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,102 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <i class="bi bi-person-circle display-1 text-primary"></i>
+            <h2 class="fw-bold mt-3">Welcome Back!</h2>
+            <p class="text-muted">Sign in to your account</p>
+          </div>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">
+                <i class="bi bi-envelope me-2"></i>Email Address
+              </label>
+              <input
+                type="email"
+                class="form-control form-control-lg"
+                id="email"
+                formControlName="email"
+                placeholder="Enter your email"
+                [class.is-invalid]="email?.invalid && email?.touched">
+              @if (email?.invalid && email?.touched) {
+                <div class="invalid-feedback">
+                  @if (email?.errors?.['required']) {
+                    Email is required
+                  } @else if (email?.errors?.['email']) {
+                    Please enter a valid email address
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label fw-semibold">
+                <i class="bi bi-lock me-2"></i>Password
+              </label>
+              <div class="input-group">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control form-control-lg"
+                  id="password"
+                  formControlName="password"
+                  placeholder="Enter your password"
+                  [class.is-invalid]="password?.invalid && password?.touched">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="togglePassword()">
+                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+              @if (password?.invalid && password?.touched) {
+                <div class="invalid-feedback d-block">
+                  @if (password?.errors?.['required']) {
+                    Password is required
+                  } @else if (password?.errors?.['minlength']) {
+                    Password must be at least 6 characters
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="rememberMe">
+              <label class="form-check-label" for="rememberMe">
+                Remember me
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg w-100 mb-3"
+              [disabled]="loading">
+              @if (loading) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Signing in...
+              } @else {
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Sign In
+              }
+            </button>
+
+            <div class="text-center">
+              <a href="#" class="text-decoration-none">Forgot password?</a>
+            </div>
+          </form>
+
+          <hr class="my-4">
+
+          <div class="text-center">
+            <p class="mb-0">
+              Don't have an account?
+              <a routerLink="/auth/register" class="fw-semibold text-decoration-none">Sign Up</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

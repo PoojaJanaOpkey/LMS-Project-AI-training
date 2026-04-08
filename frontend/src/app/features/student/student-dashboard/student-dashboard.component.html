@@ -1,0 +1,278 @@
+<div class="container py-5">
+  <!-- Welcome Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="display-5 fw-bold">
+        Welcome back, {{ currentUser?.firstName }}! 👋
+      </h1>
+      <p class="lead text-muted">Track your learning progress and continue your courses</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  @if (!loading) {
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-md-3">
+        <div class="card stat-card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-1">Total Courses</p>
+                <h2 class="fw-bold mb-0">{{ stats.totalCourses }}</h2>
+              </div>
+              <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                <i class="bi bi-book-fill text-primary fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card stat-card success border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-1">Completed</p>
+                <h2 class="fw-bold mb-0">{{ stats.completedCourses }}</h2>
+              </div>
+              <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                <i class="bi bi-check-circle-fill text-success fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card stat-card warning border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-1">In Progress</p>
+                <h2 class="fw-bold mb-0">{{ stats.inProgressCourses }}</h2>
+              </div>
+              <div class="rounded-circle bg-warning bg-opacity-10 p-3">
+                <i class="bi bi-clock-fill text-warning fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card stat-card danger border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-1">Hours Learned</p>
+                <h2 class="fw-bold mb-0">{{ stats.totalHoursLearned | number:'1.0-0' }}</h2>
+              </div>
+              <div class="rounded-circle bg-info bg-opacity-10 p-3">
+                <i class="bi bi-hourglass-split text-info fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Progress Overview -->
+    <div class="row mb-5">
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 pt-4">
+            <h5 class="fw-bold mb-0">Learning Progress Overview</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-semibold">Overall Completion Rate</span>
+                <span class="text-primary fw-bold">
+                  {{ stats.totalCourses > 0 ? (stats.completedCourses / stats.totalCourses * 100 | number:'1.0-0') : 0 }}%
+                </span>
+              </div>
+              <div class="progress" style="height: 20px;">
+                <div 
+                  class="progress-bar bg-primary" 
+                  role="progressbar" 
+                  [style.width.%]="stats.totalCourses > 0 ? (stats.completedCourses / stats.totalCourses * 100) : 0">
+                </div>
+              </div>
+            </div>
+
+            <!-- Simple Chart Representation -->
+            <div class="row text-center mt-4">
+              <div class="col-4">
+                <div class="mb-2">
+                  <div class="position-relative d-inline-block">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="54" fill="none" stroke="#e9ecef" stroke-width="12"></circle>
+                      <circle 
+                        cx="60" 
+                        cy="60" 
+                        r="54" 
+                        fill="none" 
+                        stroke="#0d6efd" 
+                        stroke-width="12"
+                        [attr.stroke-dasharray]="339.292"
+                        [attr.stroke-dashoffset]="339.292 * (1 - (stats.completedCourses / stats.totalCourses))"></circle>
+                    </svg>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                      <h4 class="fw-bold mb-0">{{ stats.completedCourses }}</h4>
+                    </div>
+                  </div>
+                  <p class="text-muted small mt-2 mb-0">Completed</p>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="mb-2">
+                  <div class="position-relative d-inline-block">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="54" fill="none" stroke="#e9ecef" stroke-width="12"></circle>
+                      <circle 
+                        cx="60" 
+                        cy="60" 
+                        r="54" 
+                        fill="none" 
+                        stroke="#ffc107" 
+                        stroke-width="12"
+                        [attr.stroke-dasharray]="339.292"
+                        [attr.stroke-dashoffset]="339.292 * (1 - (stats.inProgressCourses / stats.totalCourses))"></circle>
+                    </svg>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                      <h4 class="fw-bold mb-0">{{ stats.inProgressCourses }}</h4>
+                    </div>
+                  </div>
+                  <p class="text-muted small mt-2 mb-0">In Progress</p>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="mb-2">
+                  <div class="position-relative d-inline-block">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="54" fill="none" stroke="#e9ecef" stroke-width="12"></circle>
+                      <circle 
+                        cx="60" 
+                        cy="60" 
+                        r="54" 
+                        fill="none" 
+                        stroke="#6c757d" 
+                        stroke-width="12"
+                        [attr.stroke-dasharray]="339.292"
+                        [attr.stroke-dashoffset]="339.292 * (1 - ((stats.totalCourses - stats.completedCourses - stats.inProgressCourses) / stats.totalCourses))"></circle>
+                    </svg>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                      <h4 class="fw-bold mb-0">{{ stats.totalCourses - stats.completedCourses - stats.inProgressCourses }}</h4>
+                    </div>
+                  </div>
+                  <p class="text-muted small mt-2 mb-0">Not Started</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white border-0 pt-4">
+            <h5 class="fw-bold mb-0">Quick Actions</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              <a routerLink="/courses" class="btn btn-primary">
+                <i class="bi bi-search me-2"></i>Browse Courses
+              </a>
+              <button class="btn btn-outline-primary" disabled>
+                <i class="bi bi-award me-2"></i>My Certificates
+              </button>
+              <button class="btn btn-outline-primary" disabled>
+                <i class="bi bi-gear me-2"></i>Account Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enrolled Courses -->
+    <div class="row mb-4">
+      <div class="col">
+        <h3 class="fw-bold">My Enrolled Courses</h3>
+        <p class="text-muted">Continue learning and track your progress</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      @for (course of enrolledCourses; track course.id) {
+        <div class="col-md-6 col-lg-4">
+          <div class="card course-card h-100 border-0 shadow-sm">
+            <img [src]="course.imageUrl" class="card-img-top" [alt]="course.title" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+              <span class="badge bg-primary mb-2">{{ course.category | titlecase }}</span>
+              <h5 class="card-title fw-bold">{{ course.title }}</h5>
+              
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <small class="text-muted">Progress</small>
+                  <small class="fw-bold" [class]="'text-' + getProgressColor(course.progress)">
+                    {{ course.progress }}%
+                  </small>
+                </div>
+                <div class="progress" style="height: 8px;">
+                  <div 
+                    [class]="'progress-bar bg-' + getProgressColor(course.progress)"
+                    role="progressbar" 
+                    [style.width.%]="course.progress">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <small class="text-muted d-block">
+                  <i class="bi bi-person me-1"></i>{{ course.instructor }}
+                </small>
+                <small class="text-muted d-block">
+                  <i class="bi bi-clock me-1"></i>{{ course.duration }} hours
+                </small>
+                <small class="text-muted d-block">
+                  <i class="bi bi-calendar me-1"></i>Enrolled: {{ course.enrolledAt | date:'shortDate' }}
+                </small>
+              </div>
+              
+              <div class="d-grid">
+                <a [routerLink]="['/courses', course.id]" class="btn btn-primary">
+                  @if (course.progress === 100) {
+                    <i class="bi bi-check-circle me-2"></i>Review Course
+                  } @else if (course.progress > 0) {
+                    <i class="bi bi-play-circle me-2"></i>Continue Learning
+                  } @else {
+                    <i class="bi bi-play-circle me-2"></i>Start Learning
+                  }
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (enrolledCourses.length === 0) {
+      <div class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h3 class="mt-3">No Enrolled Courses</h3>
+        <p class="text-muted mb-4">Start your learning journey by enrolling in a course</p>
+        <a routerLink="/courses" class="btn btn-primary btn-lg">Browse Courses</a>
+      </div>
+    }
+  }
+</div>
